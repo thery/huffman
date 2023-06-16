@@ -13,16 +13,17 @@
 (* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA *)
 (* 02110-1301 USA                                                     *)
 
-(***********************************************************************)
-(*    Proof of Huffman algorithm: WeightTree.v                         *)
-(*                                                                     *)
-(*                                                                     *)
-(*                                    Laurent.Thery@inria.fr (2003)    *)
-(***********************************************************************)
+(** * Weights of binary trees
 
-From Huffman Require Export BTree.
-From Huffman Require Export Ordered.
-Require Import ArithRing.
+- Key definitions: [sum_leaves]
+- Initial author: Laurent.Thery@inria.fr (2003)
+
+*)
+
+From Coq Require Import ArithRing Sorting.Permutation.
+From Huffman Require Export BTree Ordered.
+
+Set Default Proof Using "Type".
  
 Section WeightTree.
 Variable A : Type.
@@ -36,18 +37,19 @@ Fixpoint sum_leaves (t : btree A) : nat :=
 
 Definition sum_order x y := sum_leaves x <= sum_leaves y.
 
-Definition le_sum x y := le_bool (sum_leaves x) (sum_leaves y).
+Definition le_sum x y := sum_leaves x <=? sum_leaves y.
  
 Theorem le_sum_correct1 :
  forall a b1 : btree A, le_sum a b1 = true -> sum_order a b1.
-Proof using.
-intros a b1; apply (le_bool_correct3 (sum_leaves a) (sum_leaves b1)).
+Proof.
+intros a b1; apply (leb_complete (sum_leaves a) (sum_leaves b1)).
 Qed.
  
 Theorem le_sum_correct2 :
  forall a b1 : btree A, le_sum a b1 = false -> sum_order b1 a.
-Proof using.
-intros a b1; apply (le_bool_correct4 (sum_leaves a) (sum_leaves b1)).
+Proof.
+intros a b1 Hsum; apply Nat.leb_gt in Hsum.
+unfold sum_order; auto with arith.
 Qed.
  
 Fixpoint weight_tree (t : btree A) : nat :=
@@ -64,14 +66,14 @@ Theorem weight_tree_list_node :
  forall (t1 t2 : btree A) (l : list (btree A)),
  weight_tree_list (node t1 t2 :: l) =
  sum_leaves t1 + sum_leaves t2 + weight_tree_list (t1 :: t2 :: l).
-Proof using.
+Proof.
 intros t1 t2 l; simpl in |- *; ring.
 Qed.
  
 Theorem weight_tree_list_permutation :
  forall l1 l2 : list (btree A),
- permutation l1 l2 -> weight_tree_list l1 = weight_tree_list l2.
-Proof using.
+ Permutation l1 l2 -> weight_tree_list l1 = weight_tree_list l2.
+Proof.
 intros l1 l2 H; elim H; auto.
 simpl in |- *; auto; intros; ring.
 simpl in |- *; auto; intros; ring.
@@ -85,21 +87,21 @@ Arguments le_sum [A].
 Arguments weight_tree [A].
 Arguments weight_tree_list [A].
 
-(* 
+(** 
   sum_leaves are the same for ordered list that are permutations
   one from the other
 *)
 Theorem ordered_sum_leaves_eq :
  forall (A : Type) (f : A -> nat) (l1 l2 : list (btree A)),
- permutation l1 l2 ->
+ Permutation l1 l2 ->
  ordered (sum_order f) l1 ->
  ordered (sum_order f) l2 -> map (sum_leaves f) l1 = map (sum_leaves f) l2.
-Proof using.
+Proof.
 intros A f l1 l2 H H0 H1.
 apply ordered_perm_antisym_eq with (order := le).
-exact le_trans.
-exact le_antisym.
-apply permutation_map; auto.
+exact Nat.le_trans.
+exact Nat.le_antisymm.
+apply Permutation_map; auto.
 apply ordered_map_inv; auto.
 apply ordered_map_inv; auto.
 Qed.

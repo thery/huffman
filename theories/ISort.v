@@ -13,21 +13,18 @@
 (* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA *)
 (* 02110-1301 USA                                                     *)
 
-(***********************************************************************)
-(*    Proof of Huffman algorithm: ISort.v                              *)
-(*                                                                     *)
-(*    Definition of sorting by insertion and its proof of correctness  *)
-(*                                                                     *)
-(*    Definitions: isort, insert                                       *)
-(*                                                                     *)
-(*                                    Laurent.Thery@inria.fr (2003)    *)
-(***********************************************************************)
+(** * Sorting by insertion and its correctness
 
-Require Import List.
-From Huffman Require Import Permutation.
+- Key definitions: [isort], [insert]
+- Initial author: Laurent.Thery@inria.fr (2003)
+
+*)
+
+From Coq Require Import List Sorting.Permutation.
 From Huffman Require Import Ordered.
-From Huffman Require Import sTactic.
- 
+
+Set Default Proof Using "Type".
+
 Section ISortExample.
 Variable A : Type.
 Variable order : A -> A -> Prop.
@@ -35,10 +32,15 @@ Variable order_fun : A -> A -> bool.
 Hypothesis order_fun_true : forall a b : A, order_fun a b = true -> order a b.
 Hypothesis order_fun_false : forall a b : A, order_fun a b = false -> order b a.
 
-(* Insert an element *) 
+#[local] Hint Constructors Permutation : core.
+#[local] Hint Resolve Permutation_refl : core.
+#[local] Hint Resolve Permutation_app : core.
+#[local] Hint Resolve Permutation_app_swap : core.
+
+(** Insert an element *) 
 Fixpoint insert (a : A) (l : list A) {struct l} : list A :=
   match l with
-  | nil => a :: nil
+  | [] => a :: []
   | b :: l1 =>
       match order_fun a b with
       | true => a :: l
@@ -46,7 +48,7 @@ Fixpoint insert (a : A) (l : list A) {struct l} : list A :=
       end
   end.
 
-(* Inserting preserves ordering *)
+(** Inserting preserves ordering *)
 Theorem insert_ordered :
  forall l : list A,
  ordered order l -> forall a : A, ordered order (insert a l).
@@ -68,39 +70,40 @@ generalize (refl_equal (order_fun a0 b));
  intros Eq1; auto.
 Qed.
 
-(* Inserting returns a permutation *)
+(** Inserting returns a permutation *)
 Theorem insert_permutation :
- forall (L : list A) (a : A), permutation (a :: L) (insert a L).
-Proof using.
+ forall (L : list A) (a : A), Permutation (a :: L) (insert a L).
+Proof.
 intros L; elim L; simpl in |- *; auto.
 intros b l H' a.
-CaseEq (order_fun a b); intros H1; auto.
-apply permutation_trans with (l2 := b :: a :: l); auto.
+case_eq (order_fun a b); intros H1; auto.
+apply Permutation_trans with (l' := b :: a :: l); auto.
 Qed.
-Hint Resolve insert_ordered insert_permutation : core.
+#[local] Hint Resolve insert_ordered insert_permutation : core.
 
-(* Sorting by insertion *)
+(** Sorting by insertion *)
 Fixpoint isort (l : list A) : list A :=
   match l with
-  | nil => nil
+  | [] => []
   | b :: l1 => insert b (isort l1)
   end.
 
-(* Sorting gives an ordered list *)
+(** Sorting gives an ordered list *)
 Theorem isort_ordered : forall l : list A, ordered order (isort l).
-Proof using order_fun_false order_fun_true. 
+Proof using order_fun_false order_fun_true.
 intros l; elim l; simpl in |- *; auto.
 Qed.
 
-(* The result is a permutation of the original list *)
-Theorem isort_permutation : forall l : list A, permutation l (isort l).
-Proof using.
+(** The result is a permutation of the original list *)
+Theorem isort_permutation : forall l : list A, Permutation l (isort l).
+Proof.
 intros l; elim l; clear l; simpl in |- *; auto.
 intros a l H'.
-apply permutation_trans with (l2 := a :: isort l); auto.
+apply Permutation_trans with (l' := a :: isort l); auto.
 Qed.
-Hint Resolve isort_ordered isort_permutation : core.
+#[local] Hint Resolve isort_ordered isort_permutation : core.
 
 End ISortExample.
+
 Arguments insert [A].
 Arguments isort [A].

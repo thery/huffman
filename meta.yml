@@ -3,17 +3,29 @@ fullname: Huffman
 shortname: huffman
 organization: coq-community
 community: true
+action: true
+coqdoc: true
+coqdoc_index: 'docs/latest/coqdoc/toc.html'
 
-synopsis: A Coq proof of the correctness of the Huffman coding algorithm
+synopsis: Coq proof of the correctness of the Huffman coding algorithm
 
-description: |
+description: |-
   This projects contains a Coq proof of the correctness of the Huffman coding algorithm,
   as described in David A. Huffman's paper A Method for the Construction of Minimum-Redundancy
   Codes, Proc. IRE, pp. 1098-1101, September 1952.
 
+publications:
+- pub_url: https://hal.archives-ouvertes.fr/hal-02149909
+  pub_title: Formalising Huffman's algorithm
+- pub_url: http://compression.ru/download/articles/huff/huffman_1952_minimum-redundancy-codes.pdf
+  pub_title: A Method for the Construction of Minimum-Redundancy Codes
+  pub_doi: 10.1109/JRPROC.1952.273898
+
 authors:
 - name: Laurent Théry
   initial: true
+- name: Karl Palmskog
+  orcid: 0000-0003-0228-1240
 
 maintainers:
 - name: Karl Palmskog
@@ -21,22 +33,26 @@ maintainers:
 
 opam-file-maintainer: palmskog@gmail.com
 
+opam-file-version: dev
+
 license:
   fullname: GNU Lesser General Public License v2.1 or later
   identifier: LGPL-2.1-or-later
 
 supported_coq_versions:
-  text: 8.7 or later
-  opam: '{(>= "8.7" & < "8.11~") | (= "dev")}'
-
-tested_coq_nix_versions:
-- version_or_url: https://github.com/coq/coq-on-cachix/tarball/master
-- version_or_url: 8.9
-- version_or_url: 8.8
-- version_or_url: 8.7
+  text: 8.12 or later
+  opam: '{(>= "8.12" & < "8.18~") | (= "dev")}'
 
 tested_coq_opam_versions:
-- version: dev
+- version: 'dev'
+- version: '8.17'
+- version: '8.16'
+- version: '8.15'
+- version: '8.14'
+- version: '8.13'
+- version: '8.12'
+
+ci_cron_schedule: '10 1 * * 0'
 
 namespace: Huffman
 
@@ -49,19 +65,30 @@ categories:
 - name: Computer Science/Decision Procedures and Certified Algorithms/Correctness proofs of algorithms
 - name: Miscellaneous/Extracted Programs/Combinatorics
 
-documentation: |
+documentation: |-
   ## Documentation
-    
-  To run the algorithm, open an OCaml toplevel (`ocaml`) and do
+
+  For more information about the project, see the [technical report][techreport]
+  describing the formalization. See also the [coqdoc presentation][coqdoc] of the
+  Coq source files from the latest release.
+
+  ### Running extracted code
+
+  To extract code and obtain the program, run
+  ```shell
+  make run_huffman.ml
+  ```
+
+  Next, open an OCaml toplevel (e.g., `ocaml`) and do
   ```ocaml
   #use "run_huffman.ml";;
   ```
-  
+
   To get the code that gives the frequency string:  
   ```ocaml
   let code = huffman "abbcccddddeeeee";;
   ```
-  
+
   To code a string:
   ```ocaml
   let c = encode code "abcde";;
@@ -72,13 +99,6 @@ documentation: |
   decode code c;;
   ```
 
-  Some more information on the development is available:
-  ftp://ftp-sop.inria.fr/marelle/Laurent.Thery/Huffman/index.html
-  
-  In particular, a note in PDF format describes the formalization:
-  ftp://ftp-sop.inria.fr/marelle/Laurent.Thery/Huffman/Note.pdf
-
-  See also the [paper on the algorithm][paper].
-
-  [paper]: http://compression.ru/download/articles/huff/huffman_1952_minimum-redundancy-codes.pdf
+  [techreport]: https://hal.archives-ouvertes.fr/hal-02149909
+  [coqdoc]: https://coq-community.org/huffman/docs/latest/coqdoc/toc.html
 ---

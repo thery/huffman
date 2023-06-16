@@ -13,23 +13,23 @@
 (* Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA *)
 (* 02110-1301 USA                                                     *)
 
-(**********************************************************************
-    Proof of Huffman algorithm: Extraction.v                         
-                                                                     
-    Extraction for the huffman algorithm                             
-                                                                     
-    Create a file huffman.ml where the function huffman is the       
-    algorithm                                                        
-                                                                     
-                                    Laurent.Thery@inria.fr (2003)    
- **********************************************************************)
+(**
+    Proof of Huffman algorithm: Extraction.v
+
+    Extraction for the Huffman algorithm
+
+    Create a file huffman.ml where the function huffman is the
+    algorithm
+
+    Initial author: Laurent.Thery@inria.fr (2003)
+*)
 
 From Huffman Require Import Huffman.
 From Huffman Require Import Code.
 From Huffman Require Import ISort.
 From Coq Require Extraction.
 
-Extraction Inline list_length_induction.
+Extraction Inline list_length_induction huffman_aux_F.
 Extraction NoInline code insert isort map frequency_list huffman encode decode.
  
 Extraction "huffman.ml" code huffman encode decode.

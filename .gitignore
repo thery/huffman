@@ -3,9 +3,15 @@ Makefile.coq.conf
 huffman.ml
 huffman.mli
 run_huffman.ml
+_build
+docs
 *~
 *.d
 *.aux
 *.glob
 *.vo
 *.vio
+*.vok
+*.vos
+.lia.cache
+.coq-native
